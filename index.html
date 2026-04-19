@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Gerador de Escalas - Igreja</title>
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.3/dist/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Gerador de Escalas</div>
+  <div class="actions">
+    <button id="btnGenerate" class="primary">Gerar escala</button>
+    <button id="btnExcel">Exportar Excel</button>
+    <button id="btnPdf">Exportar PDF</button>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h1>Configuração da Escala</h1>
+
+    <div class="grid">
+      <!-- LADO ESQUERDO -->
+      <div>
+        <label>Título da escala</label>
+        <input id="title" placeholder="Ex: Escala - Ministério da Recepção" />
+
+        <label>Subtítulo (opcional)</label>
+        <input id="subtitle" placeholder="Ex: IASD Central • Março/2026" />
+
+        <label>Mês</label>
+        <input id="month" type="month" />
+
+        <label>Dias de culto</label>
+        <div class="row">
+          <label class="chk"><input type="checkbox" id="daySun" checked> Domingo</label>
+          <label class="chk"><input type="checkbox" id="dayMon"> Segunda</label>
+          <label class="chk"><input type="checkbox" id="dayTue"> Terça</label>
+          <label class="chk"><input type="checkbox" id="dayWed" checked> Quarta</label>
+          <label class="chk"><input type="checkbox" id="dayThu"> Quinta</label>
+          <label class="chk"><input type="checkbox" id="dayFri"> Sexta</label>
+          <label class="chk"><input type="checkbox" id="daySat" checked> Sábado</label>
+        </div>
+
+        <div class="row config-row">
+          <div class="config-box">
+            <label>Pessoas por culto</label>
+            <input id="peoplePerDay" type="number" min="1" value="1" />
+          </div>
+          <div class="config-box">
+            <label>Intervalo mínimo entre escalas</label>
+            <input id="cooldownEvents" type="number" min="0" value="1" />
+          </div>
+        </div>
+
+        <label>Logo/Imagem (opcional)</label>
+        <input id="logo" type="file" accept="image/*" />
+
+        <hr class="sep">
+
+        <div class="row-between">
+          <h2 class="section-title">Pessoas</h2>
+        </div>
+
+        <div class="person-form">
+          <label>Nome</label>
+          <input id="personName" placeholder="Digite o nome da pessoa" />
+
+          <label>Disponibilidade</label>
+          <div class="row">
+            <label class="chk"><input type="checkbox" id="personSun" checked> Domingo</label>
+            <label class="chk"><input type="checkbox" id="personMon"> Segunda</label>
+            <label class="chk"><input type="checkbox" id="personTue"> Terça</label>
+            <label class="chk"><input type="checkbox" id="personWed" checked> Quarta</label>
+            <label class="chk"><input type="checkbox" id="personThu"> Quinta</label>
+            <label class="chk"><input type="checkbox" id="personFri"> Sexta</label>
+            <label class="chk"><input type="checkbox" id="personSat" checked> Sábado</label>
+          </div>
+
+          <label>Observação (opcional)</label>
+          <input id="personObs" placeholder="Ex: prefere sábado / viaja na última semana" />
+
+          <div class="row person-form-actions">
+            <button id="btnAddPerson" class="primary">Adicionar pessoa</button>
+            <button id="btnClearPeople" type="button">Limpar tudo</button>
+          </div>
+        </div>
+
+        <div class="summary-box" id="peopleSummary">
+          Nenhuma pessoa cadastrada.
+        </div>
+
+        <div id="peopleList" class="people-list"></div>
+
+        <p class="hint">Cadastre as pessoas manualmente e defina os dias em que cada uma pode participar.</p>
+      </div>
+
+      <!-- LADO DIREITO -->
+      <div>
+        <h2>Prévia da escala</h2>
+
+        <div id="preview" class="preview">
+          <div class="report-header">
+            <img id="logoPreview" class="logo" alt="" />
+            <div class="header-text">
+              <div id="previewTitle" class="report-title">Escala</div>
+              <div id="previewSub" class="report-sub">Selecione um mês e gere a escala</div>
+            </div>
+          </div>
+
+          <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+              <span class="stat-label">Pessoas ativas</span>
+              <strong id="statPeople">0</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Cultos no mês</span>
+              <strong id="statEvents">0</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Escalas previstas</span>
+              <strong id="statAssignments">0</strong>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Média por pessoa</span>
+              <strong id="statAverage">0</strong>
+            </div>
+          </div>
+
+          <div id="warningBox" class="warning-box" hidden></div>
+
+          <div class="preview-sections">
+            <div class="calendar-card">
+              <div class="calendar-head">
+                <div class="calendar-title">Calendário</div>
+                <div id="calendarMonthLabel" class="calendar-sub">—</div>
+              </div>
+              <div id="calendar" class="calendar"></div>
+              <div class="calendar-legend">
+                <span class="dot dot-cult"></span> Dia de culto
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <div class="table-top">
+                <div class="table-help">
+                  Depois de gerar, você pode editar manualmente os nomes de cada data.
+                </div>
+                <button id="btnResetEdits" class="ghost" disabled>↩ Resetar edições</button>
+              </div>
+
+              <table class="tbl">
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Dia</th>
+                    <th>Escalados</th>
+                  </tr>
+                </thead>
+                <tbody id="tblBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <p class="small">* O sistema tenta equilibrar automaticamente as escalas com base na disponibilidade e no intervalo mínimo configurado.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <span class="copy">©</span> Desenvolvido por Carlos Daniel Araujo
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
