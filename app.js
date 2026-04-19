@@ -94,9 +94,7 @@ function uniqueId() {
   return "p_" + Math.random().toString(36).slice(2, 10);
 }
 
-/* =========================
-   PESSOAS
-========================= */
+
 
 function getAvailabilityLabel(p) {
   const days = [];
@@ -291,9 +289,7 @@ function loadPersonForEdit(id) {
   $("btnAddPerson").textContent = "Salvar edição";
 }
 
-/* =========================
-   GERAÇÃO INTELIGENTE
-========================= */
+
 
 function smartGenerateSchedule({ peopleList, cultDays, cooldownEvents = 1, peoplePerDay = 1 }) {
   const activePeople = peopleList.filter(p => p.active);
@@ -357,9 +353,7 @@ function smartGenerateSchedule({ peopleList, cultDays, cooldownEvents = 1, peopl
   return rows;
 }
 
-/* =========================
-   PRÉVIA / STATS
-========================= */
+
 
 function updateStatsPreview() {
   const month = $("month").value;
@@ -403,9 +397,7 @@ function updatePreviewHeader(title, subtitle) {
   $("previewSub").textContent = subtitle || "Selecione um mês e gere a escala";
 }
 
-/* =========================
-   CALENDÁRIO
-========================= */
+
 
 function renderCalendar({ year, monthIndex0, selectedWeekdaysSet, assignmentByISO = {} }) {
   const cal = $("calendar");
@@ -477,9 +469,7 @@ function rebuildCalendarFromSchedule() {
   renderCalendar({ year, monthIndex0, selectedWeekdaysSet: selected, assignmentByISO });
 }
 
-/* =========================
-   TABELA EDITÁVEL
-========================= */
+
 
 function getEligiblePeopleByDayName(dayName) {
   const dayMap = {
@@ -553,9 +543,7 @@ function renderEditableTable() {
   });
 }
 
-/* =========================
-   GERAÇÃO
-========================= */
+
 
 function onGenerate() {
   const title = $("title").value.trim();
@@ -619,9 +607,7 @@ function onGenerate() {
   $("btnResetEdits").disabled = true;
 }
 
-/* =========================
-   RESET
-========================= */
+
 
 $("btnResetEdits").addEventListener("click", () => {
   if (!lastSchedule || !originalRows) return;
@@ -636,9 +622,7 @@ $("btnResetEdits").addEventListener("click", () => {
   $("btnResetEdits").disabled = true;
 });
 
-/* =========================
-   EXPORTAR EXCEL
-========================= */
+
 
 function exportExcel() {
   if (!ensureGenerated()) return;
@@ -666,9 +650,7 @@ function exportExcel() {
   XLSX.writeFile(wb, `${safeName}.xlsx`);
 }
 
-/* =========================
-   EXPORTAR PDF
-========================= */
+
 
 function exportPDF() {
   if (!ensureGenerated()) return;
@@ -739,9 +721,7 @@ function exportPDF() {
   doc.save(`${safeName}.pdf`);
 }
 
-/* =========================
-   LOGO
-========================= */
+
 
 $("logo").addEventListener("change", (e) => {
   const file = e.target.files?.[0];
@@ -761,9 +741,7 @@ $("logo").addEventListener("change", (e) => {
   reader.readAsDataURL(file);
 });
 
-/* =========================
-   EVENTOS DE TELA
-========================= */
+
 
 $("btnAddPerson").addEventListener("click", addOrUpdatePerson);
 
@@ -828,9 +806,7 @@ $("btnGenerate").addEventListener("click", onGenerate);
 $("btnExcel").addEventListener("click", exportExcel);
 $("btnPdf").addEventListener("click", exportPDF);
 
-/* =========================
-   INICIALIZAÇÃO
-========================= */
+
 
 clearPersonForm();
 renderPeople();
