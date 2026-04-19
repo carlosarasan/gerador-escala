@@ -46,10 +46,11 @@ Se o intervalo for `2`, o sistema tenta fazer com que dois cultos passem antes d
 
 Isso ajuda a tornar a escala mais justa e equilibrada.
 
-## Estrutura do projeto
+---
 
-```bash
-/
-├── index.html
-├── styles.css
-└── app.js
+## Desenvolvido por
+
+**Carlos Daniel**
+
+
+
